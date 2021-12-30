@@ -111,11 +111,127 @@
 //     textAlign: 'center',
 //   },
 // });
-import React from 'react';
-import Navigator from './src/navigator';
+import React, {useState, useRef} from 'react';
+import {
+  SafeAreaView,
+  Animated,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  TouchableWithoutFeedback,
+  Text,
+} from 'react-native';
+import {NormalText, Box, Button} from '../../component';
+import * as Animatable from 'react-native-animatable';
 
-const App = () => {
-  return <Navigator />;
+const HomeScreen = () => {
+  const [fontSize, setFontSize] = useState((fontSize || 10) + 5);
+  const [opacity, setOpacity] = useState(1);
+  const [animation, setAnimation] = useState();
+  const [toggledOn, setToggledOn] = useState(false);
+  const [slideAnimation, setSlideAnimation] = useState();
+  const handleViewRef = useRef();
+  const handleTextRef = useRef();
+  const handleViewRef2 = useRef();
+  const bounce = () => {
+    handleViewRef.current
+      .bounce(800)
+      .then(endState =>
+        console.log(endState.finished ? 'bounce finished' : 'bounce cancelled'),
+      );
+  };
+
+  return (
+    <Box as={SafeAreaView}>
+      <Button onPress={() => setFontSize((fontSize || 10) + 5)}>
+        <Animatable.Text
+          transition="fontSize"
+          style={{fontSize: fontSize || 15}}>
+          Size me up, Scotty
+        </Animatable.Text>
+      </Button>
+      <Button
+        onPress={bounce}
+        style={styles.button}
+        background={'lightcoral'}
+        width={'50%'}
+        alignSelf={'center'}
+        p={10}
+        m={2}>
+        <Animatable.Text ref={handleViewRef}>Bounce me!</Animatable.Text>
+      </Button>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          setOpacity(!opacity);
+        }}>
+        <Animatable.Text
+          transition="opacity"
+          style={{opacity: opacity ? opacity : 0.2}}
+          ref={handleTextRef}>
+          Fade me!
+        </Animatable.Text>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          setAnimation('zoomIn');
+        }}>
+        <Animatable.Text animation={animation}>Zoom me out</Animatable.Text>
+      </TouchableWithoutFeedback>
+      <Button onPress={() => setToggledOn(!toggledOn)}>
+        <Text
+          style={[styles.toggle, toggledOn && styles.toggledOn]}
+          transition={['color', 'rotate', 'fontSize']}>
+          Toggle me!
+        </Text>
+      </Button>
+      <TouchableWithoutFeedback onPress={() => setSlideAnimation('zoomInDown')}>
+        <View ref={handleViewRef2}>
+          <Text
+            // style={[styles.toggle, toggledOn && styles.toggledOn]}
+            animation={slideAnimation}
+            // transition={['color', 'rotate', 'fontSize']}
+          >
+            SLIDE IN UP
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+    </Box>
+  );
 };
 
-export default App;
+export default HomeScreen;
+const styles = StyleSheet.create({
+  button: {
+    color: '#f4f4f4',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  textBtn: {
+    color: '#f4f4f4',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  toggle: {
+    width: 120,
+    backgroundColor: 'pink',
+    borderRadius: 3,
+    padding: 5,
+    fontSize: 14,
+    alignSelf: 'center',
+    textAlign: 'center',
+    margin: 10,
+    color: 'rgba(255, 255, 255, 1)',
+  },
+  toggledOn: {
+    color: 'rgba(255, 33, 33, 1)',
+    fontSize: 16,
+    transform: [
+      {
+        rotate: '5deg',
+      },
+      {
+        translateY: -20,
+      },
+    ],
+  },
+});
